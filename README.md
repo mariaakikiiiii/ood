@@ -1,131 +1,109 @@
 # ood
-# Library System
+# Library Management System
 
 ## Overview
-The Library System is a simple Java application that models the functionalities of a library, allowing users to manage items, sign up customers, and process purchases. The system includes different roles, such as librarians and customers, with various features for each role.
+This Library Management System is a Java-based application that allows users to manage a library where items (books, newspapers, DVDs) can be bought or borrowed. The system consists of different user types, including **Managers**, **Librarians**, and **Customers**, who interact with the library in various ways.
 
 ## Features
-- **User Management**: Sign up, log in, and log out users (librarians and customers).
-- **Item Management**: Add, remove, and manage items such as books, DVDs, and newspapers.
-- **Purchasing**: Customers can buy items with or without a membership, with discounts available for members.
+- **User Authentication:** Managers, Librarians, and Customers can sign up, log in, and log out.
+- **Item Management:** Books, DVDs, and newspapers can be added, bought, or borrowed.
+- **Customer Actions:** Customers can buy items, borrow items, and manage memberships.
+- **Librarian Actions:** Librarians can manage the library and oversee transactions.
+- **Manager Actions:** Managers can create and delete librarians, set salaries, and manage the library system.
+- **Balance Management:** Customers have a balance they can use to purchase items or memberships.
 
-## Classes
+## Classes Summary
 
-### User Class
-```java
-import java.util.ArrayList;
-import java.util.Scanner;
+### 1. `Item`
+Base class representing an item in the library.
+- Attributes: `stock`, `itemId`, `borrowPrice`, `buyPrice`
+- Methods: Getters and setters for item attributes.
 
-public abstract class User {
-    private Scanner scanner = new Scanner(System.in);
-    private int nbUsers;
-    private int userId;
-    private String fname;
-    private String lname;
-    private String phoneNumber;
-    private String password;
+### 2. `Book` (extends `Item`)
+Represents a book in the library.
+- Additional attributes: `title`, `author`, `publisher`, `ISBN`, `genres`
 
-    // Constructor with all parameters
-    public User(int userId, String fname, String lname, String phoneNumber, String password, int nbUsers) {
-        this.userId = userId;
-        this.fname = fname;
-        this.lname = lname;
-        this.phoneNumber = phoneNumber;
-        this.password = password;
-        this.nbUsers = nbUsers;
-    }
+### 3. `Dvd` (extends `Item`)
+Represents a DVD available in the library.
+- Additional attributes: `filmName`, `genre`
 
-    // Constructor with nbUsers only
-    public User(int nbUsers) {
-        this(-1, "", "", "", "", nbUsers);
-    }
+### 4. `NewsPaper` (extends `Item`)
+Represents a newspaper.
+- Additional attributes: `date`
 
-    // Default constructor
-    public User() {
-        this(-1, "", "", "", "", -1);
-    }
+### 5. `User`
+Abstract base class for all users.
+- Attributes: `userId`, `fname`, `lname`, `phoneNumber`, `password`
+- Methods: Login, logout, and authentication management.
 
-    // Copy constructor
-    public User(User user) {
-        this(user.getUserId(), user.getFname(), user.getLname(), user.getPhoneNumber(), user.getPassword(), user.getNbUsers());
-    }
+### 6. `Customer` (extends `User`)
+Represents a customer who can buy or borrow items.
+- Additional attributes: `isMember`, `balance`, `borrowedItems`
+- Methods: `signUp()`, `buyItem()`, `borrowItem()`, `buyMembership()`, `returnItem()`
 
-    // Getters and Setters
-    public int getNbUsers() { return nbUsers; }
-    public int getUserId() { return userId; }
-    public String getFname() { return fname; }
-    public String getLname() { return lname; }
-    public String getPhoneNumber() { return phoneNumber; }
-    public String getPassword() { return password; }
-    
-    public void setUserId(int userId) { this.userId = userId; }
-    public void setFname(String fname) { this.fname = fname; }
-    public void setLname(String lname) { this.lname = lname; }
-    public void setPhoneNumber(String phoneNumber) { this.phoneNumber = phoneNumber; }
-    public void setPassword(String password) { this.password = password; }
-    public void setNbUsers(int nbUsers) { this.nbUsers = nbUsers; }
+### 7. `Librarian` (extends `User`)
+Represents a librarian who manages the library.
+- Additional attributes: `salary`, `jobStatus`
+- Methods: `signUp()` (specific to librarian registration)
 
-    @Override
-    public String toString() {
-        return "First name: " + fname + " Last name: " + lname + " Phone number: " + phoneNumber + " Password: " + password;
-    }
+### 8. `Manager` (extends `Librarian`)
+Represents a manager with authority over librarians and the library system.
+- Additional methods:
+  - `createLibrarian()`: Adds a new librarian.
+  - `createManager()`: Creates another manager (admin only).
+  - `deleteManager()`: Deletes a manager (admin only).
+  - `deleteLibrarian()`: Removes a librarian.
+  - `setSalary()`: Updates a librarian’s salary.
+  - `viewAllSalaries()`: Displays salaries of all librarians and managers.
+  - `viewAllLibrarians()`: Lists all librarians.
 
-    private boolean checkPhoneNumber(String phoneNumber, ArrayList<User> users) {
-        if (phoneNumber.length() != 11) {
-            return false;
-        }
-        for (User user : users) {
-            if (phoneNumber.equals(user.getPhoneNumber())) {
-                return false;
-            }
-        }
-        return true;
-    }
+### 9. `LibrarySystem`
+Manages users and items in the library.
+- Methods:
+  - `addItem()`, `removeItem()`: Manage library items.
+  - `addUser()`, `removeUser()`: Manage users.
+  - `authenticateUser()`: Verifies login credentials.
+  - `getAllItems()`, `getAllUsers()`: Retrieve all records.
 
-    public int signUp(ArrayList<User> users, int nbUsers, User user) {
-        System.out.println("Enter your phone number: ");
-        String phoneNum = scanner.nextLine();
-        System.out.println("Enter your password: ");
-        String pass = scanner.nextLine();
-        System.out.println("Enter your first name: ");
-        String fn = scanner.nextLine();
-        System.out.println("Enter your last name: ");
-        String ln = scanner.nextLine();
+### 10. `Library`
+Represents the library itself.
+- Attributes: `name`, `phoneNumber`, `openHours`, `catalog`
+- Methods: `addItem()`, `manageUsers()`, `buyItem()`, `borrowItem()`
 
-        if (checkPhoneNumber(phoneNum, users)) {
-            user.setUserId(nbUsers);
-            user.setNbUsers(nbUsers);
-            user.setFname(fn);
-            user.setLname(ln);
-            user.setPassword(pass);
-            user.setPhoneNumber(phoneNum);
-            System.out.println("Your user ID is: " + userId);
-            return 1;
-        } else {
-            System.out.println("Invalid phone number");
-            return -1;
-        }
-    }
+### 11. `Main`
+The entry point of the application where users can log in, sign up, buy items, and borrow books.
+- Handles user interaction, library transactions, and account management.
 
-    public int login(ArrayList<User> users, int Id, String pass) {
-        System.out.println("Enter your userID: ");
-        int x = -1;
-        int p = 0;
-        for (int i = 0; i < users.size(); i++) {
-            if (Id == users.get(i).getUserId()) {
-                if (pass.equals(users.get(i).getPassword())) {
-                    x = 1;
-                    break;
-                } else {
-                    x = -2;
-                }
-            }
-        }
-        if (x == 1) {
-            System.out.println("Login successful. Welcome " + users.get(p).getFname());
-            return Id;
-        } else if (x == -1) {
-            System.out.println("Login failed. Invalid userID.");
-            return -1;
-        } else {
-            System.out.println
+## How It Works
+1. **User Signup/Login**
+   - Customers, librarians, and managers can sign up with their details.
+   - A customer can buy a membership for discounts.
+   - Users can log in using their phone number and password.
+
+2. **Buying & Borrowing Items**
+   - Customers can buy books, DVDs, and newspapers if they have enough balance.
+   - Borrowed items must be returned within a specific period.
+
+3. **Library & User Management**
+   - Librarians oversee inventory and customer transactions.
+   - Managers handle librarian and manager roles, salaries, and overall system management.
+
+## How to Run
+1. Compile the Java files:
+   ```sh
+   javac *.java
+   ```
+2. Run the application:
+   ```sh
+   java Main
+   ```
+
+## Future Enhancements
+- Implement a graphical user interface (GUI) for better interaction.
+- Add a database to store user data and item inventory.
+- Introduce overdue penalties for borrowed items.
+- Improve security by hashing passwords.
+
+## Author
+Created as a project to demonstrate Object-Oriented Programming (OOP) concepts in Java.
+
