@@ -33,7 +33,7 @@ Represents a newspaper.
 
 ### 5. `User`
 Abstract base class for all users.
-- Attributes: `userId`, `fname`, `lname`, `phoneNumber`, `password`
+- Attributes: `userId`, `username`, `phoneNumber`, `password`
 - Methods: Login, logout, and authentication management.
 
 ### 6. `Customer` (extends `User`)
